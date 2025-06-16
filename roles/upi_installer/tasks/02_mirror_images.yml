@@ -1,0 +1,30 @@
+- name: Create imageset configuration
+  ansible.builtin.copy:
+    dest: "{{ ocp_install_dir }}/imageset-config.yaml"
+    mode: preserve
+    content: |
+      apiVersion: mirror.openshift.io/v1alpha2
+      kind: ImageSetConfiguration
+      mirror:
+        platform:
+          channels:
+          - name: stable-{{ ocp_version.split('.')[0] }}.{{ ocp_version.split('.')[1] }}
+            type: ocp
+
+- name: Mirror OCP images to local registry
+  ansible.builtin.command: >
+    oc mirror --config={{ ocp_install_dir }}/imageset-config.yaml
+    docker://{{ local_registry_url }}/{{ local_registry_repo }}
+    --dest-skip-tls
+  args:
+    chdir: "{{ ocp_install_dir }}"
+    creates: "{{ ocp_install_dir }}/results-*"
+  register: mirror_result
+  async: 10800 # Run for up to 3 hours
+  poll: 60
+  changed_when: mirror_result.rc == 0
+
+- name: Fail if mirroring failed
+  ansible.builtin.fail:
+    msg: "Image mirroring failed. Check logs on the bastion host."
+  when: mirror_result.rc != 0

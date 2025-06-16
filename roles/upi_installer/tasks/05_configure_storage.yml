@@ -1,0 +1,27 @@
+- name: Ensure kubernetes.core collection is present
+  ansible.builtin.command: ansible-galaxy collection install kubernetes.core
+  changed_when: false
+
+- name: Template EBS StorageClass manifest
+  ansible.builtin.template:
+    src: ebs-sc.yaml.j2
+    dest: "{{ ocp_install_dir }}/ebs-sc.yaml"
+    mode: preserve  # or "u=rw,g=r,o=r"
+
+- name: Template EFS StorageClass manifest
+  ansible.builtin.template:
+    src: efs-sc.yaml.j2
+    dest: "{{ ocp_install_dir }}/efs-sc.yaml"
+    mode: preserve  # or "u=rw,g=r,o=r"
+
+- name: Apply EBS StorageClass
+  kubernetes.core.k8s:
+    state: present
+    src: "{{ ocp_install_dir }}/ebs-sc.yaml"
+    kubeconfig: "{{ ocp_install_dir }}/auth/kubeconfig"
+
+- name: Apply EFS StorageClass
+  kubernetes.core.k8s:
+    state: present
+    src: "{{ ocp_install_dir }}/efs-sc.yaml"
+    kubeconfig: "{{ ocp_install_dir }}/auth/kubeconfig"

@@ -1,0 +1,9 @@
+# playbook.yml
+- name: Deploy Disconnected OpenShift
+  hosts: installation_host # Should match your Ansible inventory host
+  gather_facts: false
+  vars_files: []
+    # You can define your variables in a separate file for clarity
+    # - vars/my_cluster_vars.yml
+  roles:
+    - role: upi_installer

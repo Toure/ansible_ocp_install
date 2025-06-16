@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: Local test run for upi_installer role.
+  hosts: localhost
+  remote_user: root
+  roles:
+    - upi_installer

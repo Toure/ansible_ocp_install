@@ -1,0 +1,11 @@
+# roles/upi_installer/templates/ebs-sc.yaml.j2
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: gp3-fast
+provisioner: ebs.csi.aws.com
+parameters:
+  type: gp3
+reclaimPolicy: Delete
+allowVolumeExpansion: true
+volumeBindingMode: WaitForFirstConsumer

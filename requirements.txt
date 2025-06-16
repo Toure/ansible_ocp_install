@@ -1,0 +1,8 @@
+# requirements.txt
+ansible
+ansible-lint
+# Required for AWS lookups
+boto3
+botocore
+# Required for HashiCorp Vault lookups
+hvac

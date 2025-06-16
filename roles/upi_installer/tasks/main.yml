@@ -1,0 +1,22 @@
+# SPDX-License-Identifier: MIT-0
+---
+# tasks file for upi_installer
+# roles/upi_installer/tasks/main.yml
+# roles/upi_installer/tasks/main.yml
+- name: 00 - Prepare and retrieve secrets
+  ansible.builtin.include_tasks: 00_prepare_secrets.yml
+
+- name: 01 - Prepare installation host
+  ansible.builtin.include_tasks: 01_prepare_host.yml
+
+- name: 02 - Mirror OpenShift images
+  ansible.builtin.include_tasks: 02_mirror_images.yml
+
+- name: 03 - Generate OpenShift installation configs and ignition files
+  ansible.builtin.include_tasks: 03_generate_configs.yml
+
+- name: 04 - Wait for bootstrap to complete
+  ansible.builtin.include_tasks: 04_monitor_bootstrap.yml
+
+- name: 05 - Configure post-install cluster storage
+  ansible.builtin.include_tasks: 05_configure_storage.yml

@@ -1,0 +1,50 @@
+# SPDX-License-Identifier: MIT-0
+---
+# roles/upi_installer/defaults/main.yml
+
+# --- SECRET MANAGEMENT CONFIGURATION ---
+# Define the backend to use for secrets.
+# Options:
+#   vars: (Default) Use the variables defined directly in this file. Good for testing/dev.
+#   aws_secrets_manager: Pull secrets from AWS Secrets Manager.
+#   hashicorp_vault: Pull secrets from HashiCorp Vault.
+secrets_backend: "vars"
+
+# --- Option 1: 'vars' Backend (Plaintext values) ---
+# Used if secrets_backend is "vars".
+local_pull_secret_plaintext: '{"auths": {"your-local-registry.example.com": {"auth": "bXk...","email": "you@example.com"}}}'
+ssh_public_key_plaintext: "ssh-rsa AAAA..."
+
+# --- Option 2: 'aws_secrets_manager' Backend ---
+# Used if secrets_backend is "aws_secrets_manager".
+# NOTE: The Ansible controller needs AWS credentials and permissions to access these secrets.
+aws_secret_region: "us-east-1"
+aws_pull_secret_name: "openshift/local-pull-secret" # The name or ARN of the secret in AWS
+aws_ssh_key_secret_name: "openshift/ssh-public-key"  # The secret containing the SSH public key
+
+# --- Option 3: 'hashicorp_vault' Backend ---
+# Used if secrets_backend is "hashicorp_vault".
+# NOTE: The Ansible controller needs VAULT_ADDR and VAULT_TOKEN environment variables set.
+vault_pull_secret_path: "secret/data/openshift"   # The path to the secret in Vault
+vault_pull_secret_key: "pull_secret"              # The key within that secret path
+vault_ssh_key_path: "secret/data/openshift"       # Path for the SSH key
+vault_ssh_key_key: "ssh_public_key"               # Key for the SSH key
+
+# --- OpenShift Version and Installation Details ---
+ocp_version: "4.14.8" # Desired OCP version
+ocp_install_dir: "/home/ansible/ocp-install" # Working directory for installation files
+
+# --- Disconnected Registry Details ---
+local_registry_url: "your-local-registry.example.com"
+local_registry_repo: "ocp4/openshift4"
+
+# --- Cluster Definition ---
+cluster_name: "my-ocp-cluster"
+base_domain: "your.base.domain.com"
+# ssh_public_key: is now handled by the secrets backend
+
+# --- Pre-existing AWS Infrastructure Details ---
+aws_region: "us-east-1"
+aws_subnet_ids:
+  - "subnet-0123456789abcdef0"
+aws_efs_filesystem_id: "fs-0123456789abcdef0"

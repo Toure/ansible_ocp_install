@@ -1,0 +1,26 @@
+# roles/upi_installer/templates/install-config.yaml.j2
+apiVersion: v1
+baseDomain: {{ base_domain }}
+metadata:
+  name: {{ cluster_name }}
+platform:
+  aws:
+    region: {{ aws_region }}
+    subnets:
+      {{ aws_subnet_ids | to_nice_yaml(indent=6) | indent(6) }}
+controlPlane:
+  name: master
+  replicas: 3
+compute:
+- name: worker
+  replicas: 3
+- name: infra
+  replicas: 3
+imageContentSources:
+- mirrors:
+  - {{ local_registry_url }}/{{ local_registry_repo }}
+  source: quay.io/openshift-release-dev/ocp-release
+# Use the centrally managed secret variable
+pullSecret: '{{ ocp_pull_secret }}'
+# Use the centrally managed key variable
+sshKey: '{{ ocp_ssh_public_key }}'

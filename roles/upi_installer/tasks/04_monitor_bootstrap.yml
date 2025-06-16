@@ -1,0 +1,7 @@
+- name: Wait for bootstrap process to complete
+  ansible.builtin.command: >
+    openshift-install wait-for bootstrap-complete --dir={{ ocp_install_dir }} --log-level=info
+  register: bootstrap_complete
+  changed_when: bootstrap_complete.rc == 0
+  environment:
+    KUBECONFIG: "{{ ocp_install_dir }}/auth/kubeconfig"

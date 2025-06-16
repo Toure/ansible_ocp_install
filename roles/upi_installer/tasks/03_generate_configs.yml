@@ -1,0 +1,41 @@
+- name: Create install-config.yaml from template
+  ansible.builtin.template:
+    src: install-config.yaml.j2
+    dest: "{{ ocp_install_dir }}/install-config.yaml"
+    mode: '0644'
+
+- name: Generate Kubernetes manifests
+  ansible.builtin.command: >
+    openshift-install create manifests --dir={{ ocp_install_dir }}
+  args:
+    creates: "{{ ocp_install_dir }}/manifests"
+
+- name: Find the results directory from mirroring
+  ansible.builtin.find:
+    paths: "{{ ocp_install_dir }}"
+    patterns: "results-*"
+    file_type: directory
+  register: mirror_results_dir
+
+- name: Copy ImageContentSourcePolicy to manifests directory
+  ansible.builtin.copy:
+    src: "{{ item.path }}/imageContentSourcePolicy.yaml"
+    dest: "{{ ocp_install_dir }}/manifests/imageContentSourcePolicy.yaml"
+    remote_src: true
+    mode: preserve
+  with_items: "{{ mirror_results_dir.files }}"
+
+- name: Generate ignition configs
+  ansible.builtin.command: >
+    openshift-install create ignition-configs --dir={{ ocp_install_dir }}
+  args:
+    creates: "{{ ocp_install_dir }}/bootstrap.ign"
+
+- name: Display manual handoff message
+  ansible.builtin.debug:
+    msg:
+      - "******************** MANUAL ACTION REQUIRED ********************"
+      - "Ignition files have been generated in {{ ocp_install_dir }}."
+      - "You must now use bootstrap.ign, master.ign, and worker.ign to launch your EC2 instances via User Data."
+      - "After launching the nodes, the playbook will continue by waiting for the bootstrap to complete."
+      - "*****************************************************************"

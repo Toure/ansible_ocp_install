@@ -1,0 +1,11 @@
+# roles/upi_installer/templates/efs-sc.yaml.j2
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: efs-shared-files
+provisioner: efs.csi.aws.com
+parameters:
+  provisioningMode: efs-ap
+  fileSystemId: "{{ aws_efs_filesystem_id }}"
+  directoryPerms: "700"
+reclaimPolicy: Delete
