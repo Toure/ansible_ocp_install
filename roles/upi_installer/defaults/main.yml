@@ -12,6 +12,9 @@ secrets_backend: "vars"
 
 # --- Option 1: 'vars' Backend (Plaintext values) ---
 # Used if secrets_backend is "vars".
+# NOTE: Storing secrets in plaintext is NOT recommended for production use.
+# generated via `cat pull-secret.txt | base64 -w0` and `ssh-keygen -y -f private_key.pem > public_key.pub && cat public_key.pub`
+# Replace these with your actual secrets for testing.
 local_pull_secret_plaintext: '{"auths": {"your-local-registry.example.com": {"auth": "bXk...","email": "you@example.com"}}}'
 ssh_public_key_plaintext: "ssh-rsa AAAA..."
 
@@ -35,12 +38,12 @@ ocp_version: "4.14.8" # Desired OCP version
 ocp_install_dir: "/home/ansible/ocp-install" # Working directory for installation files
 
 # --- Disconnected Registry Details ---
-local_registry_url: "your-local-registry.example.com"
+local_registry_url: "your-local-registry.example.com" 
 local_registry_repo: "ocp4/openshift4"
 
 # --- Cluster Definition ---
-cluster_name: "my-ocp-cluster"
-base_domain: "your.base.domain.com"
+cluster_name: "my-ocp-cluster" # Cluster name based on definition from the terraform tfvars file.
+base_domain: "your.base.domain.com" # Base domain for the cluster
 # ssh_public_key: is now handled by the secrets backend
 
 # --- Pre-existing AWS Infrastructure Details ---
